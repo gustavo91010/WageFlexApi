@@ -2,11 +2,14 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import EmployerEntity from './employer.entity';
-import ProviderEntity from './provider.entity';
+import Employer from './employer.entity';
+import Provider from './provider.entity';
+import Task from './Task.entity';
 
 @Entity()
 export default class Daily {
@@ -27,19 +30,23 @@ export default class Daily {
   @Column()
   endTime: Date;
 
-  @OneToOne(() => ProviderEntity, {
+  @OneToOne(() => Provider, {
     nullable: true,
     cascade: true,
     eager: true,
   })
   @JoinColumn()
-  provider: ProviderEntity;
+  provider: Provider;
 
-  @OneToOne(() => EmployerEntity, {
+  @OneToOne(() => Employer, {
     nullable: true,
     cascade: true,
     eager: true,
   })
   @JoinColumn()
-  employer: EmployerEntity;
+  employer: Employer;
+
+  @ManyToMany(() => Daily)
+  @JoinTable()
+  task: Task[];
 }

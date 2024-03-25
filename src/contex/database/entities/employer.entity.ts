@@ -1,9 +1,9 @@
 import { UUID } from 'crypto';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import ProviderEntity from './provider.entity';
+import Provider from './provider.entity';
 
 @Entity()
-export default class EmployerEntity {
+export default class Employer {
   // o empregado, a pessoa que presta o servico
 
   @PrimaryGeneratedColumn()
@@ -13,15 +13,15 @@ export default class EmployerEntity {
   @Column()
   cnpj: string;
   @Column()
-  offeredServicetype: string;
+  task: string;
 
-  @OneToMany(() => ProviderEntity, (pro) => pro.employer)
-  provider!: ProviderEntity[];
+  @OneToMany(() => Provider, (pro) => pro.employer)
+  provider!: Provider[];
 
   @Column()
   accessToken: UUID;
 
-  constructor(init?: Partial<EmployerEntity>) {
+  constructor(init?: Partial<Employer>) {
     Object.assign(this, init);
   }
 }

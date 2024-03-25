@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import EmployerEntity from 'src/contex/database/entities/employer.entity';
+import Employer from 'src/contex/database/entities/employer.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class EmployerRepository {
   constructor(
-    @InjectRepository(EmployerEntity)
-    private employerRepository: Repository<EmployerEntity>,
+    @InjectRepository(Employer)
+    private employerRepository: Repository<Employer>,
   ) {}
 
-  findAll(): Promise<EmployerEntity[]> {
+  findAll(): Promise<Employer[]> {
     return this.employerRepository.find();
   }
 
-  findOne(id: number): Promise<EmployerEntity | null> {
+  findOne(id: number): Promise<Employer | null> {
     return this.employerRepository.findOneBy({ id });
   }
 
