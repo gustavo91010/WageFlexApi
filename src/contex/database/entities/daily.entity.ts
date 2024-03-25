@@ -19,14 +19,21 @@ export default class Daily {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: false })
-  typeService: string;
+  //@Column({ nullable: false })
+  //typeService: string;
+  @ManyToMany(() => Daily)
+  @JoinTable()
+  task: Task[];
+
   @Column({ nullable: false })
   unitPrice: number;
+
   @Column()
   serviceCost: number;
+
   @Column()
   startTime: Date;
+
   @Column()
   endTime: Date;
 
@@ -46,7 +53,5 @@ export default class Daily {
   @JoinColumn()
   employer: Employer;
 
-  @ManyToMany(() => Daily)
-  @JoinTable()
-  task: Task[];
+  
 }

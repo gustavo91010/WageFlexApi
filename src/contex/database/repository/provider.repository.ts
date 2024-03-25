@@ -10,12 +10,12 @@ export class ProviderRepository {
     private dailyRepository: Repository<Provider>,
   ) {}
 
-  findAll(): Promise<Provider[]> {
-    return this.dailyRepository.find();
+  public async findAll(): Promise<Provider[]> {
+    return await this.dailyRepository.find();
   }
 
-  findOne(id: number): Promise<Provider | null> {
-    return this.dailyRepository.findOneBy({ id });
+  public async findOne(id: number): Promise<Provider | null> {
+    return await this.dailyRepository.findOneBy({ id });
   }
 
   async remove(id: number): Promise<void> {
