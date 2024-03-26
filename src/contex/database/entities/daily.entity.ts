@@ -4,6 +4,7 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -37,7 +38,7 @@ export default class Daily {
   @Column()
   endTime: Date;
 
-  @OneToOne(() => Provider, {
+  @ManyToOne(() => Provider, {
     nullable: true,
     cascade: true,
     eager: true,
@@ -45,13 +46,11 @@ export default class Daily {
   @JoinColumn()
   provider: Provider;
 
-  @OneToOne(() => Employer, {
+  @ManyToOne(() => Employer, {
     nullable: true,
     cascade: true,
     eager: true,
   })
   @JoinColumn()
   employer: Employer;
-
-  
 }
