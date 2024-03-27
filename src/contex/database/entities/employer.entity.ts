@@ -1,19 +1,32 @@
 import { UUID } from 'crypto';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import Provider from './provider.entity';
+import Task from './Task.entity';
 
 @Entity()
 export default class Employer {
-  // o empregado, a pessoa que presta o servico
+  // o prestador do servico
 
   @PrimaryGeneratedColumn()
   id: number;
   @Column()
-  legalName: string;
+  name: string;
   @Column()
-  cnpj: string;
+  email: string;
   @Column()
-  task: string;
+  create_at: Date;
+  @Column()
+  update_at: Date;
+  @ManyToMany(() => Employer)
+  @JoinTable()
+  task: Task[];
 
   @OneToMany(() => Provider, (pro) => pro.employer)
   provider!: Provider[];

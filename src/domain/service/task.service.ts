@@ -7,6 +7,10 @@ import Task from 'src/contex/database/entities/Task.entity';
 export default class TaskrService {
   constructor(private readonly taskRepository: TaskRepository) {}
 
+  public async create(type: string): Promise<Task> {
+    const task = new Task(type);
+    return await this.taskRepository.save(task);
+  }
   public async findById(id: number): Promise<Task> | null {
     const task = await this.taskRepository.findOne(id);
     if (!task) {

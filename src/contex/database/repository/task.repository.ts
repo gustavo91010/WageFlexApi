@@ -10,6 +10,9 @@ export class TaskRepository {
     private taskRepository: Repository<Task>,
   ) {}
 
+  public async save(task: Task): Promise<Task> {
+    return await this.taskRepository.save(task);
+  }
   public async findAll(): Promise<Task[]> {
     return await this.taskRepository.find();
   }

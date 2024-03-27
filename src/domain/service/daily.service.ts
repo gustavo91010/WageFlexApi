@@ -62,6 +62,22 @@ export default class DailyService {
     id: number,
     newDaily: Daily,
   ): Promise<{ success: boolean; message?: string; newDaily?: Daily }> {
-    return this.dailyRepository.update(id, newDaily);
+    try {
+      const daily = await this.dailyRepository.findOne(id);
+
+      if (!daily) {
+        return { success: false, message: 'Diária não encontrada' };
+      }
+
+      newDaily = Object.assign(daily, newDaily);
+      await this.dailyRepository.update(newDaily);
+
+      return { success: true, newDaily: newDaily };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Ocorreu um erro ao tentar atualizar a diária.',
+      };
+    }
   }
 }

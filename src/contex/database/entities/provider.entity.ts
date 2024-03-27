@@ -16,14 +16,15 @@ export default class Provider {
 
   @PrimaryGeneratedColumn()
   id: number;
+
   @Column()
-  name: string;
+  legalName: string;
   @Column()
-  email: string;
+  cnpj: string;
   @Column()
-  registrationDate: Date;
+  create_at: Date;
   @Column()
-  updateAt: Date;
+  update_at: Date;
  
   @ManyToMany(() => Provider)
   @JoinTable()

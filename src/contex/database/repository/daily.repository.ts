@@ -18,25 +18,8 @@ export class DailyRepository {
     return await this.dailyRepository.findOneBy({ id });
   }
 
-  public async update(
-    id: number,
-    newDaily: Daily,
-  ): Promise<{ success: boolean; message?: string; newDaily?: Daily }> {
-    try {
-      const daily = await this.findOne(id);
-
-      if (!daily) {
-        return { success: false, message: 'Diária não encontrada' };
-      }
-
-      newDaily = Object.assign(daily, newDaily);
-      return { success: true, newDaily: newDaily };
-    } catch (error) {
-      return {
-        success: false,
-        message: 'Ocorreu um erro ao tentar atualizar a diária.',
-      };
-    }
+  public async update(daily: Daily) {
+    await this.dailyRepository.save(daily);
   }
 
   async remove(id: number): Promise<void> {
