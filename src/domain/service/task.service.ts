@@ -7,7 +7,16 @@ import Task from 'src/contex/database/entities/Task.entity';
 export default class TaskrService {
   constructor(private readonly taskRepository: TaskRepository) {}
 
-  public async create(type: string): Promise<Task> {
+  public async register(type: string): Promise<Task> {
+    let nastType = await this.findByType(type.toLowerCase());
+
+    if (!nastType) {
+      nastType = await this.create(type);
+    }
+    return nastType;
+  }
+
+  private async create(type: string): Promise<Task> {
     const task = new Task(type);
     return await this.taskRepository.save(task);
   }
@@ -20,9 +29,6 @@ export default class TaskrService {
   }
   public async findByType(type: string): Promise<Task> | null {
     const task = await this.taskRepository.findType(type);
-    if (!task) {
-      throw new NotFoundException('Atividade não encontrado');
-    }
     return task;
   }
 }

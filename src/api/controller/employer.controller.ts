@@ -12,9 +12,7 @@ export default class EmployerController {
   public async create(
     @Body() employerDto: EmployerDTO,
   ): Promise<{ employer: Employer }> {
-    console.log('opa, cgegamso aqui...', employerDto)
     const response = await this.employerService.create(employerDto);
-    this.logger.log('Create employer: ' + response.id);
 
     return {
       employer: response,

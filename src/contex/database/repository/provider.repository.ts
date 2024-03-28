@@ -7,18 +7,28 @@ import { Repository } from 'typeorm';
 export class ProviderRepository {
   constructor(
     @InjectRepository(Provider)
-    private dailyRepository: Repository<Provider>,
+    private providerRepository: Repository<Provider>,
   ) {}
-
+  public async save(provider: Provider): Promise<Provider> {
+    if (!(provider instanceof Provider)) {
+      throw new Error('O objeto recebido não é do tipo Provider.');
+  }
+    console.log('no repository', provider);
+    console.log('no repository', typeof provider);
+    return await this.providerRepository.save(provider);
+  }
   public async findAll(): Promise<Provider[]> {
-    return await this.dailyRepository.find();
+    return await this.providerRepository.find();
   }
 
   public async findOne(id: number): Promise<Provider | null> {
-    return await this.dailyRepository.findOneBy({ id });
+    return await this.providerRepository.findOneBy({ id });
+  }
+  public async findCnpj(cnpj: string): Promise<Provider | null> {
+    return await this.providerRepository.findOneBy({ cnpj });
   }
 
   async remove(id: number): Promise<void> {
-    await this.dailyRepository.delete(id);
+    await this.providerRepository.delete(id);
   }
 }

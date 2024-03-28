@@ -4,6 +4,8 @@ import { ProviderRepository } from 'src/contex/database/repository/provider.repo
 import Provider from 'src/contex/database/entities/provider.entity';
 import ProviderDTO from '../models/provider.dto';
 import TaskrService from './task.service';
+import { MsgException } from '../errors/msg.exception';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export default class ProviderService {
@@ -22,19 +24,39 @@ export default class ProviderService {
   public async create(employerDto: ProviderDTO): Promise<Provider> {
     const { legalName, cnpj, task } = employerDto;
     const provider = new Provider();
+
     provider.legalName = legalName;
     provider.cnpj = cnpj;
+    provider.task = [];
 
-    // Cria um array de Promises para todas as chamadas assíncronas
-    const taskPromises = task.map(async (singleTask) => {
-      return await this.taskService.create(singleTask);
-    });
+    if (await this.findByCnpj(cnpj)) {
+      throw new MsgException('Provider já registrado');
+    }
 
-    // Espera todas as Promises serem resolvidas usando Promise.all()
-    const tasks = await Promise.all(taskPromises);
+    if (!Array.isArray(task) || task.length === 0) {
+      throw new MsgException('A lista de task não pode estar vazia');
+    }
 
-    // Adiciona as tarefas resolvidas ao objeto employer
-    provider.task.push(...tasks);
-    return provider;
+    provider.create_at = new Date();
+    provider.accessToken = randomUUID();
+
+    for (const singleTask of task) {
+      let newTask;
+      const existingTask = await this.taskService.findByType(singleTask);
+
+      if (existingTask) {
+        newTask = existingTask;
+      } else {
+        newTask = await this.taskService.register(singleTask);
+      }
+      provider.task.push(newTask);
+    }    console.log('provider',provider)
+    const newprovider = await this.providerRepository.save(provider);
+    console.log('newprovider',newprovider)
+    return newprovider;
+  }
+
+  public async findByCnpj(cnpj: string): Promise<Provider> {
+    return await this.providerRepository.findCnpj(cnpj);
   }
 }

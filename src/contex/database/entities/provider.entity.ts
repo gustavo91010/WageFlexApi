@@ -23,15 +23,19 @@ export default class Provider {
   cnpj: string;
   @Column()
   create_at: Date;
-  @Column()
-  update_at: Date;
+  @Column({ nullable: true })
+  update_at?: Date;
  
-  @ManyToMany(() => Provider)
+  @ManyToMany(() => Provider,{
+    nullable: true,
+    cascade: true,
+    //eager: true,
+  })
   @JoinTable()
-  task: Task[];
+  task?: Task[];
 
   @OneToMany(() => Employer, (emp) => emp.provider)
-  employer: Employer[];
+  employer?: Employer[];
   @Column()
   accessToken: UUID;
 

@@ -22,11 +22,15 @@ export default class Employer {
   email: string;
   @Column()
   create_at: Date;
-  @Column()
+  @Column({ nullable: true })
   update_at: Date;
-  @ManyToMany(() => Employer)
+  @ManyToMany(() => Employer, {
+    nullable: true,
+    cascade: true,
+   // eager: true,
+  })
   @JoinTable()
-  task: Task[];
+  task?: Task[];
 
   @OneToMany(() => Provider, (pro) => pro.employer)
   provider!: Provider[];
