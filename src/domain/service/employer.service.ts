@@ -31,7 +31,7 @@ export default class EmployerService {
     let employer = new Employer();
     employer.name = nome;
     employer.email = email;
-    employer.task = [];
+    employer.tasks = [];
     if (await this.findByEmail(email)) {
       throw new MsgException('usuário já registrado');
     }
@@ -46,14 +46,17 @@ export default class EmployerService {
     for (const singleTask of task) {
       let newTask;
       const existingTask = await this.taskService.findByType(singleTask);
-console.log('existingTask',existingTask)
+
       if (existingTask) {
         newTask = existingTask;
       } else {
+        console.log('evma qui para criar')
         newTask = await this.taskService.register(singleTask);
       }
-      employer.task.push(newTask);
+      console.log('newTask',newTask)
+      employer.tasks.push(newTask);
     }
+    console.log('employer',employer);
     employer = await this.employerRepository.save(employer);
     return employer;
   }

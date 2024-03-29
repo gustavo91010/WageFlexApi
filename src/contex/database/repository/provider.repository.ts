@@ -12,10 +12,13 @@ export class ProviderRepository {
   public async save(provider: Provider): Promise<Provider> {
     if (!(provider instanceof Provider)) {
       throw new Error('O objeto recebido não é do tipo Provider.');
-  }
+    }
     console.log('no repository', provider);
     console.log('no repository', typeof provider);
-    return await this.providerRepository.save(provider);
+    const um: Provider = provider;
+    console.log('um é um', typeof um);
+
+    return await this.providerRepository.save(um);
   }
   public async findAll(): Promise<Provider[]> {
     return await this.providerRepository.find();

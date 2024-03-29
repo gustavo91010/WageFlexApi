@@ -27,7 +27,7 @@ export default class ProviderService {
 
     provider.legalName = legalName;
     provider.cnpj = cnpj;
-    provider.task = [];
+    provider.tasks = [];
 
     if (await this.findByCnpj(cnpj)) {
       throw new MsgException('Provider já registrado');
@@ -49,9 +49,9 @@ export default class ProviderService {
       } else {
         newTask = await this.taskService.register(singleTask);
       }
-      provider.task.push(newTask);
+      provider.tasks.push(newTask);
     }    console.log('provider',provider)
-    const newprovider = await this.providerRepository.save(provider);
+    const newprovider: Provider = await this.providerRepository.save(provider);
     console.log('newprovider',newprovider)
     return newprovider;
   }

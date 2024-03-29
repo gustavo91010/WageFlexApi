@@ -21,7 +21,7 @@ export default class Daily {
 
   //@Column({ nullable: false })
   //typeService: string;
-  @ManyToMany(() => Daily)
+  @ManyToMany(() => Task)
   @JoinTable()
   task: Task[];
 

@@ -25,7 +25,8 @@ export default class Provider {
   create_at: Date;
   @Column({ nullable: true })
   update_at?: Date;
- 
+
+  /*
   @ManyToMany(() => Provider,{
     nullable: true,
     cascade: true,
@@ -33,9 +34,15 @@ export default class Provider {
   })
   @JoinTable()
   task?: Task[];
+  */
+  @ManyToMany(() => Task, (tasks) => tasks.providers)
+  @JoinTable()
+  tasks: Task[];
 
-  @OneToMany(() => Employer, (emp) => emp.provider)
-  employer?: Employer[];
+  @OneToMany(() => Employer, (employer) => employer.provider)
+  @JoinTable()
+  employers: Employer[];
+
   @Column()
   accessToken: UUID;
 
