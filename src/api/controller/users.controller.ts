@@ -39,4 +39,17 @@ export default class UsersController {
   ): Promise<Users> {
     return await this.usersService.findByIdentification(identification);
   }
+
+  @Get('/provider-type/:type')
+  public async findProviderByType(
+    @Param('type') type: string,
+  ): Promise<Users[]> {
+    return await this.usersService.findProviderByType(type);
+  }
+  @Get('/employer-type/:type')
+  public async findEmployerByType(
+    @Param('type') type: string,
+  ): Promise<Users[]> {
+    return await this.usersService.findEmployerByType(type);
+  }
 }

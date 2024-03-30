@@ -30,7 +30,10 @@ export class UsersRepository {
     return await this.usersRepository.findOneBy({ identification });
   }
 
-  public async findProviderByType(type: string): Promise<Users[]> {
+  public async findProviderByType(
+    type: string,
+    role: string,
+  ): Promise<Users[]> {
     return await this.usersRepository.find({
       relations: {
         activities: true,
@@ -39,6 +42,7 @@ export class UsersRepository {
         activities: {
           type: type,
         },
+        role: role,
       },
     });
   }

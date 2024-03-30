@@ -58,7 +58,11 @@ export default class UsersService {
   }
 
   public async findProviderByType(type: string): Promise<Users[]> {
-    return await this.usersRepository.findProviderByType(type);
+    return await this.usersRepository.findProviderByType(type, ERoles.provider);
+  }
+
+  public async findEmployerByType(type: string): Promise<Users[]> {
+    return await this.usersRepository.findProviderByType(type, ERoles.employer);
   }
 
   public async update(id: number, usersDto: Users): Promise<Users> {
