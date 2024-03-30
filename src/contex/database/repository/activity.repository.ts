@@ -24,6 +24,8 @@ export class ActivityRepository {
     return await this.activityRepository.findOneBy({ type });
   }
 
+
+
   async remove(id: number): Promise<void> {
     await this.activityRepository.delete(id);
   }

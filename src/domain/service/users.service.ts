@@ -16,6 +16,31 @@ export default class UsersService {
     private readonly taskService: ActivityService,
   ) {}
 
+  public async create(usersDto: UsersDto): Promise<Users> {
+    const { name, identification, isProvider, activities } = usersDto;
+    const users = new Users();
+    users.name = name;
+    users.active = false;
+    users.role = isProvider ? ERoles.provider : ERoles.employer;
+    users.identification = this.addIndentification(users.role, identification);
+
+    users.activities = [];
+    if (await this.findByIdentification(identification)) {
+      throw new MsgException('usuário já registrado');
+    }
+
+    if (!Array.isArray(activities) || activities.length === 0) {
+      throw new BadRequestException();
+    }
+
+    users.create_at = new Date();
+    users.accessToken = randomUUID();
+
+    users.activities = await this.activityFactor(activities);
+
+    return await this.usersRepository.save(users);
+  }
+
   public async findById(id: number): Promise<Users> | null {
     const users = await this.usersRepository.findById(id);
     if (!users) {
@@ -32,35 +57,20 @@ export default class UsersService {
     return users;
   }
 
-  public async create(usersDto: UsersDto): Promise<Users> {
-    const { name, identification, isProvider, activities } = usersDto;
-    const users = new Users();
-    users.name = name;
-    users.active = false;
-    users.role = ERoles.employer;
-    users.identification = this.addIndentification(isProvider, identification);
-
-    users.activities = [];
-    if (await this.findByIdentification(identification)) {
-      throw new MsgException('usuário já registrado');
-    }
-
-    if (!Array.isArray(activities) || activities.length === 0) {
-      throw new BadRequestException();
-    }
-
-    users.create_at = new Date();
-    users.accessToken = randomUUID();
-
-    users.activities = await this.gerenciamenoActivity(activities);
-
-    return await this.usersRepository.save(users);
+  public async findProviderByType(type: string): Promise<Users[]> {
+    return await this.usersRepository.findProviderByType(type);
   }
 
-  // private async gerenciamenoActivity(activities: string[], users: Users) {
-  private async gerenciamenoActivity(
-    activities: string[],
-  ): Promise<Activity[]> {
+  public async update(id: number, usersDto: Users): Promise<Users> {
+    let users = await this.findById(id);
+
+    Object.assign(users, usersDto),
+      (users = await this.usersRepository.update(users));
+
+    return users;
+  }
+
+  private async activityFactor(activities: string[]): Promise<Activity[]> {
     const listActivities: Activity[] = [];
 
     for (const singleTask of activities) {
@@ -72,30 +82,26 @@ export default class UsersService {
       } else {
         newActivity = await this.taskService.register(singleTask);
       }
-      //users.activities.push(newActivity);
       listActivities.push(newActivity);
     }
     return listActivities;
   }
 
-  private addIndentification(
-    isProvider: boolean,
-    identification: string,
-  ): string {
-    if (isProvider) {
+  private addIndentification(role: string, identification: string): string {
+    if (ERoles.provider == role) {
       // Verificação se caracteristica do CNPJ
-    } else {
+      const cnpjPaterns = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
+      if (!cnpjPaterns.test(identification)) {
+        throw new MsgException('CNPJ invalido.');
+      }
+    }
+    if (ERoles.employer == role) {
       // Verificação se caracteristica do e-mail
+      const emailPattern = /^\S+@\S+\.[a-zA-Z]{3}$/;
+      if (!emailPattern.test(identification)) {
+        throw new MsgException('E-mail invalido.');
+      }
     }
     return identification;
-  }
-
-  public async update(id: number, usersDto: Users): Promise<Users> {
-    let users = await this.findById(id);
-
-    Object.assign(users, usersDto),
-      (users = await this.usersRepository.update(users));
-
-    return users;
   }
 }

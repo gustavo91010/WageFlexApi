@@ -30,6 +30,19 @@ export class UsersRepository {
     return await this.usersRepository.findOneBy({ identification });
   }
 
+  public async findProviderByType(type: string): Promise<Users[]> {
+    return await this.usersRepository.find({
+      relations: {
+        activities: true,
+      },
+      where: {
+        activities: {
+          type: type,
+        },
+      },
+    });
+  }
+
   async update(users: Users): Promise<Users> {
     return await this.usersRepository.save(users);
   }

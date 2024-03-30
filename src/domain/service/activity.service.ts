@@ -8,12 +8,13 @@ export default class ActivityService {
   constructor(private readonly activityRepository: ActivityRepository) {}
 
   public async register(type: string): Promise<Activity> {
-    let nastType = await this.findByType(type.toLowerCase());
+    const existActivity = await this.findByType(type.toLowerCase());
 
-    if (!nastType) {
-     nastType = await this.create(type);
+    if (existActivity) {
+      // tem um bizu para se fazer aqui, com as ?? só nao sei como se aplica
+      return existActivity;
     }
-    return nastType;
+    return await this.create(type.toLowerCase());
   }
 
   private async create(type: string): Promise<Activity> {
@@ -23,12 +24,19 @@ export default class ActivityService {
   public async findById(id: number): Promise<Activity> | null {
     const activity = await this.activityRepository.findOne(id);
     if (!activity) {
-      throw new NotFoundException('Employer não encontrado');
+      throw new NotFoundException('Atividade não encontrada');
     }
     return activity;
   }
   public async findByType(type: string): Promise<Activity> | null {
     const activity = await this.activityRepository.findType(type);
+    if (!activity) {
+      throw new NotFoundException('Atividade não encontrada');
+    }
     return activity;
+  }
+
+  public async findByProvider(){
+    
   }
 }
