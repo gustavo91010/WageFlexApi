@@ -17,22 +17,22 @@ export default class UsersService {
   ) {}
 
   public async create(usersDto: UsersDto): Promise<Users> {
-    const { name, identification, isProvider, activities } = usersDto;
-    const users = new Users();
-    users.name = name;
-    users.active = false;
-    users.role = isProvider ? ERoles.provider : ERoles.employer;
-    users.identification = this.addIndentification(users.role, identification);
-
-    users.activities = [];
+    const { name, identification, activities } = usersDto;
     if (await this.findByIdentification(identification)) {
       throw new MsgException('usuário já registrado');
     }
-
     if (!Array.isArray(activities) || activities.length === 0) {
       throw new BadRequestException();
     }
+    const { identifications, roles } =
+      this.verifyIdentificationAndAddRole(identification);
 
+    const users = new Users();
+    users.name = name;
+    users.active = false;
+    users.identification = identifications;
+    users.role = roles;
+    users.activities = [];
     users.create_at = new Date();
     users.accessToken = randomUUID();
 
@@ -84,34 +84,34 @@ export default class UsersService {
     const listActivities: Activity[] = [];
 
     for (const singleTask of activities) {
-      let newActivity;
       const existingTask = await this.taskService.findByType(singleTask);
 
-      if (existingTask) {
-        newActivity = existingTask;
-      } else {
-        newActivity = await this.taskService.register(singleTask);
-      }
-      listActivities.push(newActivity);
+      const activity = existingTask
+        ? existingTask
+        : await this.taskService.register(singleTask);
+
+      listActivities.push(activity);
     }
     return listActivities;
   }
 
-  private addIndentification(role: string, identification: string): string {
-    if (ERoles.provider == role) {
-      // Verificação se caracteristica do CNPJ
-      const cnpjPaterns = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
-      if (!cnpjPaterns.test(identification)) {
-        throw new MsgException('CNPJ invalido.');
-      }
+  private verifyIdentificationAndAddRole(identification: string): {
+    identifications: string;
+    roles: string;
+  } {
+    const cnpjPaterns = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
+    const emailPattern = /^\S+@\S+\.[a-zA-Z]{3}$/;
+
+    const isCnpj = cnpjPaterns.test(identification);
+    const isEmail = emailPattern.test(identification);
+
+    if (!(isEmail || isCnpj)) {
+      throw new MsgException('Formato invalido do identificador.');
     }
-    if (ERoles.employer == role) {
-      // Verificação se caracteristica do e-mail
-      const emailPattern = /^\S+@\S+\.[a-zA-Z]{3}$/;
-      if (!emailPattern.test(identification)) {
-        throw new MsgException('E-mail invalido.');
-      }
-    }
-    return identification;
+
+    return {
+      roles: isCnpj ? ERoles.provider : ERoles.employer,
+      identifications: identification,
+    };
   }
 }

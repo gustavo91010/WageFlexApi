@@ -14,10 +14,10 @@ export default class UsersController {
   ): Promise<{ message: string; provider: Users }> {
     try {
       const response = await this.usersService.create(usersDto);
-      this.logger.log('Create provider: ' + response.id);
+      this.logger.log(`Create ${response.role}: ${response.id}`);
 
       return {
-        message: `Create provider: ${response.id}`,
+        message: `Create ${response.role}: ${response.id}`,
         provider: response,
       };
     } catch (error) {

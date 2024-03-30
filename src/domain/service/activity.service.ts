@@ -10,11 +10,7 @@ export default class ActivityService {
   public async register(type: string): Promise<Activity> {
     const existActivity = await this.findByType(type.toLowerCase());
 
-    if (existActivity) {
-      // tem um bizu para se fazer aqui, com as ?? só nao sei como se aplica
-      return existActivity;
-    }
-    return await this.create(type.toLowerCase());
+    return existActivity ?? (await this.create(type.toLowerCase()));
   }
 
   private async create(type: string): Promise<Activity> {
@@ -31,12 +27,10 @@ export default class ActivityService {
   public async findByType(type: string): Promise<Activity> | null {
     const activity = await this.activityRepository.findType(type);
     if (!activity) {
-      throw new NotFoundException('Atividade não encontrada');
+      // throw new NotFoundException('Atividade não encontrada');
     }
     return activity;
   }
 
-  public async findByProvider(){
-    
-  }
+  public async findByProvider() {}
 }
