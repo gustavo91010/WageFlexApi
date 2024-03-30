@@ -7,9 +7,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import Employer from './employer.entity';
-import Provider from './provider.entity';
-import Task from './Task.entity';
+import Activity from './activity';
+import { Users } from './users';
 
 @Entity()
 export default class Daily {
@@ -19,11 +18,9 @@ export default class Daily {
   @PrimaryGeneratedColumn()
   id: number;
 
-  //@Column({ nullable: false })
-  //typeService: string;
-  @ManyToMany(() => Task)
+  @ManyToMany(() => Activity)
   @JoinTable()
-  task: Task[];
+  task: Activity[];
 
   @Column({ nullable: false })
   unitPrice: number;
@@ -37,19 +34,11 @@ export default class Daily {
   @Column()
   endTime: Date;
 
-  @ManyToOne(() => Provider, {
-    nullable: true,
-    cascade: true,
-    eager: true,
-  })
+  @ManyToOne(() => Users, { eager: true }) // Relacionamento many-to-one com um usuário
   @JoinColumn()
-  provider: Provider;
+  employer: Users;
 
-  @ManyToOne(() => Employer, {
-    nullable: true,
-    cascade: true,
-    eager: true,
-  })
+  @ManyToOne(() => Users, { eager: true }) // Segundo relacionamento many-to-one com outro usuário
   @JoinColumn()
-  employer: Employer;
+  provider: Users;
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Daily from 'src/contex/database/entities/daily.entity';
+import Daily from 'src/contex/database/entities/daily';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -9,7 +9,9 @@ export class DailyRepository {
     @InjectRepository(Daily)
     private dailyRepository: Repository<Daily>,
   ) {}
-
+  public async save(daily: Daily): Promise<Daily> {
+    return await this.dailyRepository.save(daily);
+  }
   public async findAll(): Promise<Daily[]> {
     return await this.dailyRepository.find();
   }
@@ -19,7 +21,7 @@ export class DailyRepository {
   }
 
   public async update(daily: Daily) {
-    await this.dailyRepository.save(daily);
+     await this.dailyRepository.save(daily);
   }
 
   async remove(id: number): Promise<void> {

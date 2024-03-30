@@ -7,7 +7,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import Daily from 'src/contex/database/entities/daily.entity';
+import Daily from 'src/contex/database/entities/daily';
 import CloseDailyDTO from 'src/domain/models/close.daily.dto';
 import OpenDailyDTO from 'src/domain/models/open.daily.dto';
 import DailyService from 'src/domain/service/daily.service';
@@ -39,14 +39,17 @@ export default class DailyController {
   }
 
   @Put()
-  public async closeDaly(
-    @Body() closeDto: CloseDailyDTO,
-  ): Promise<{ closeDaily: Daily }> {
+  public async closeDaly(@Body() closeDto: CloseDailyDTO): Promise<{
+    success: boolean;
+    message?: string;
+    newDaily?: Daily;
+  }> {
     const daily = await this.dailyService.closeDaily(closeDto);
-    this.logger.log('Daily Closed: ' + daily.newDaily.id);
+    this.logger.log('Daily Closed: ' + daily);
 
     return {
-      closeDaily: daily.newDaily,
+      success: true,
+      message: 'sono...',
     };
   }
 

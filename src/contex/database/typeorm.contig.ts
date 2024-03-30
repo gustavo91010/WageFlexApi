@@ -1,9 +1,8 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import Daily from 'src/contex/database/entities/daily.entity';
-import Employer from 'src/contex/database/entities/employer.entity';
-import Provider from 'src/contex/database/entities/provider.entity';
-import Task from './entities/Task.entity';
+import Daily from 'src/contex/database/entities/daily';
+import Activity from './entities/activity';
 import 'dotenv/config';
+import { Users } from './entities/users';
 
 export const TypeormConfig: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -13,7 +12,7 @@ export const TypeormConfig: TypeOrmModuleOptions = {
   username: process.env.WF_USER,
   password: process.env.WF_PASSWORD,
   synchronize: true,
-  entities: [Daily, Provider, Employer, Task],
+  entities: [Daily, Users, Activity],
   migrations: [`${__dirname}/migrations/{.ts,*.js}`],
   migrationsRun: true,
 };

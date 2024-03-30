@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import Daily from 'src/contex/database/entities/daily.entity';
+import Daily from 'src/contex/database/entities/daily';
 import { DailyRepository } from 'src/contex/database/repository/daily.repository';
 import OpenDailyDTO from '../models/open.daily.dto';
-import ProviderService from './provider.service';
-import EmployerService from './employer.service';
-import TaskrService from './task.service';
+import UsersService from './users.service';
+import ActivityService from './activity.service';
 import CloseDailyDTO from '../models/close.daily.dto';
 import { NotFoundException } from '../errors/not-found-exception';
 
@@ -12,32 +11,38 @@ import { NotFoundException } from '../errors/not-found-exception';
 export default class DailyService {
   constructor(
     private readonly dailyRepository: DailyRepository,
-    private readonly providerService: ProviderService,
-    private readonly employerervice: EmployerService,
-    private readonly taskrService: TaskrService,
+    private readonly usersSerrvice: UsersService,
+    private readonly activityService: ActivityService,
   ) {}
 
   public opa(nome: string) {
     return this.dailyRepository.opa(nome);
   }
 
-  public async openDaily(dailyDto: OpenDailyDTO): Promise<Daily> | null {
+  public async openDaily(dailyDto: OpenDailyDTO): Promise<Daily> {
     const { typeTask, provider_id, employer_id } = dailyDto;
-    const employer = await this.employerervice.findById(employer_id);
-    const provider = await this.providerService.findById(provider_id);
-    const task = await this.taskrService.findByType(typeTask);
+    const employer = await this.usersSerrvice.findById(employer_id);
+    const provider = await this.usersSerrvice.findById(provider_id);
+
+    const activity = await this.activityService.findByType(typeTask);
 
     const daily = new Daily();
-    daily.employer = employer;
     daily.provider = provider;
-    daily.task[0] = task;
+    daily.employer = employer;
+
+    daily.task[0] = activity;
     // daily.unitPrice = value;
     daily.startTime = new Date();
+    const saveDaily = await this.dailyRepository.save(daily);
 
-    return daily;
+    return saveDaily;
   }
 
-  public async closeDaily(closeDailyDTO: CloseDailyDTO) {
+  public async closeDaily(closeDailyDTO: CloseDailyDTO): Promise<{
+    success: boolean;
+    message?: string;
+    newDaily?: Daily;
+}> {
     const { daily_id, unitPrice, serviceCost } = closeDailyDTO;
     const daily = await this.findById(daily_id);
     daily.unitPrice = unitPrice;
@@ -47,7 +52,8 @@ export default class DailyService {
     }
     daily.endTime = new Date();
 
-    return await this.update(daily.id, daily);
+    const closeDaily = await this.update(daily.id, daily);
+    return closeDaily;
   }
 
   public async findById(id: number): Promise<Daily> {
@@ -70,7 +76,7 @@ export default class DailyService {
       }
 
       newDaily = Object.assign(daily, newDaily);
-      await this.dailyRepository.update(newDaily);
+      //await this.dailyRepository.update(newDaily);
 
       return { success: true, newDaily: newDaily };
     } catch (error) {
