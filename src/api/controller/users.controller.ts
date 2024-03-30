@@ -40,16 +40,16 @@ export default class UsersController {
     return await this.usersService.findByIdentification(identification);
   }
 
-  @Get('/provider-type/:type')
+  @Get('/provider-activity/:activity')
   public async findProviderByType(
-    @Param('type') type: string,
+    @Param('activity') activity: string,
   ): Promise<Users[]> {
-    return await this.usersService.findProviderByType(type);
+    return await this.usersService.findProviderByActivity(activity);
   }
-  @Get('/employer-type/:type')
+  @Get('/employer-activity/:activity')
   public async findEmployerByType(
-    @Param('type') type: string,
+    @Param('activity') activity: string,
   ): Promise<Users[]> {
-    return await this.usersService.findEmployerByType(type);
+    return await this.usersService.findEmployerByActivity(activity);
   }
 }

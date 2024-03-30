@@ -30,7 +30,7 @@ export class UsersRepository {
     return await this.usersRepository.findOneBy({ identification });
   }
 
-  public async findProviderByType(
+  public async findProviderByActivityType(
     type: string,
     role: string,
   ): Promise<Users[]> {
