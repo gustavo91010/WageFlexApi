@@ -11,19 +11,19 @@ export default class UsersController {
   @Post()
   public async create(
     @Body() usersDto: UsersDto,
-  ): Promise<{ message: string; provider: Users }> {
+  ): Promise<{ message: string; user: Users }> {
     try {
       const response = await this.usersService.create(usersDto);
       this.logger.log(`Create ${response.role}: ${response.id}`);
 
       return {
         message: `Create ${response.role}: ${response.id}`,
-        provider: response,
+        user: response,
       };
     } catch (error) {
       return {
         message: error.message,
-        provider: null,
+        user: null,
       };
     }
   }

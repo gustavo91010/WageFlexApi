@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { NotFoundException } from '../errors/not-found-exception';
 import ActivityService from './activity.service';
 import { randomUUID } from 'crypto';
@@ -13,7 +13,7 @@ import Activity from 'src/contex/database/entities/activity';
 export default class UsersService {
   constructor(
     private readonly usersRepository: UsersRepository,
-    private readonly taskService: ActivityService,
+    private readonly activityService: ActivityService,
   ) {}
 
   public async create(usersDto: UsersDto): Promise<Users> {
@@ -21,13 +21,15 @@ export default class UsersService {
     if (await this.findByIdentification(identification)) {
       throw new MsgException('usuário já registrado');
     }
-    if (!Array.isArray(activities) || activities.length === 0) {
-      throw new BadRequestException();
-    }
+    // this.activityService.activesMustNotBeEmpty(activities);
+
     const { identifications, roles } =
       this.verifyIdentificationAndAddRole(identification);
 
     const users = new Users();
+
+    users.activities = await this.activityService.activityFactor(activities);
+
     users.name = name;
     users.active = false;
     users.identification = identifications;
@@ -35,8 +37,6 @@ export default class UsersService {
     users.activities = [];
     users.create_at = new Date();
     users.accessToken = randomUUID();
-
-    users.activities = await this.activityFactor(activities);
 
     return await this.usersRepository.save(users);
   }
@@ -78,21 +78,6 @@ export default class UsersService {
       (users = await this.usersRepository.update(users));
 
     return users;
-  }
-
-  private async activityFactor(activities: string[]): Promise<Activity[]> {
-    const listActivities: Activity[] = [];
-
-    for (const singleTask of activities) {
-      const existingTask = await this.taskService.findByType(singleTask);
-
-      const activity = existingTask
-        ? existingTask
-        : await this.taskService.register(singleTask);
-
-      listActivities.push(activity);
-    }
-    return listActivities;
   }
 
   private verifyIdentificationAndAddRole(identification: string): {

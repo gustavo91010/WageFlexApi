@@ -22,16 +22,19 @@ export default class Daily {
   @JoinTable()
   task: Activity[];
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   unitPrice: number;
 
-  @Column()
+  @Column({ nullable: true })
   serviceCost: number;
 
   @Column()
   startTime: Date;
 
-  @Column()
+  @Column({ nullable: true })
+  update_at: Date;
+
+  @Column({ nullable: true })
   endTime: Date;
 
   @ManyToOne(() => Users, { eager: true }) // Relacionamento many-to-one com um usuário

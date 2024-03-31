@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { NotFoundException } from '../errors/not-found-exception';
 import Activity from 'src/contex/database/entities/activity';
 import { ActivityRepository } from 'src/contex/database/repository/activity.repository';
+import { MsgException } from '../errors/msg.exception';
 
 @Injectable()
 export default class ActivityService {
@@ -31,6 +32,33 @@ export default class ActivityService {
     }
     return activity;
   }
+  public async findALl(): Promise<Activity[]> | null {
+    const activity = await this.activityRepository.findAll();
 
+    return activity;
+  }
   public async findByProvider() {}
+
+  public async activesMustNotBeEmpty(activities: string[]) {
+    if (!Array.isArray(activities) || activities.length === 0) {
+      throw new MsgException('O campo de servciço não pode estar vazio');
+    }
+  }
+  public async activityFactor(activities: string[]): Promise<Activity[]> {
+    if (!Array.isArray(activities) || activities.length === 0) {
+      throw new MsgException('O campo de servciço não pode estar vazio');
+    }
+    const listActivities: Activity[] = [];
+
+    for (const singleTask of activities) {
+      const existingTask = await this.findByType(singleTask);
+
+      const activity = existingTask
+        ? existingTask
+        : await this.register(singleTask);
+
+      listActivities.push(activity);
+    }
+    return listActivities;
+  }
 }

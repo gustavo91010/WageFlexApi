@@ -31,4 +31,8 @@ export default class ActivityController {
   public async findById(@Param('type') type: string): Promise<Activity> {
     return await this.activityService.findByType(type);
   }
+  @Get()
+  public async findALl(): Promise<Activity[]> {
+    return await this.activityService.findALl();
+  }
 }
